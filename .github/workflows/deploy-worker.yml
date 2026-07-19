@@ -4,48 +4,59 @@ on:
   push:
     branches:
       - main
+
   workflow_dispatch:
 
 permissions:
   contents: read
 
+
 jobs:
   deploy:
+
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout Repository
         uses: actions/checkout@v4
+
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "24"
 
-      - name: Show Project Structure
+
+      - name: Show Environment
         run: |
+          node --version
+          npm --version
           pwd
-          echo "=============================="
-          echo "Repository files"
-          echo "=============================="
+          echo "===================="
           ls -la
-          echo ""
-          echo "=============================="
-          echo "wrangler.jsonc"
-          echo "=============================="
+          echo "===================="
           cat wrangler.jsonc
 
-      - name: Deploy to Cloudflare
+
+      - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.112.0"
           command: deploy --config=wrangler.jsonc
 
-      - name: List Deployments
-        if: success()
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deployments list
+
+      - name: Debug Deployment Info
+        if: failure()
+        run: |
+          echo "Deployment failed"
+          echo "Checking Wrangler version:"
+          npx wrangler --version || true
+
+          echo "Checking project:"
+          ls -la
+
+          echo "Checking wrangler config:"
+          cat wrangler.jsonc
