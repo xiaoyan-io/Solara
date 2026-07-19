@@ -31,25 +31,15 @@ jobs:
           node-version: "24"
 
 
-      # 安装依赖前清理，避免 node_modules 被上传
-      - name: Install Dependencies
-        run: |
-          npm install
-
-
-      # 删除不需要上传的文件
       - name: Prepare Assets
         run: |
-          rm -rf node_modules
-          rm -rf .git
-          rm -rf .github
-          rm -rf solara-assets.zip
-          rm -rf Preview.gif
+          rm -rf node_modules || true
+          rm -rf .git || true
+          rm -rf .github || true
+          rm -rf solara-assets.zip || true
+          rm -rf Preview.gif || true
 
-
-      - name: Check Files
-        run: |
-          echo "Deployment files:"
+          echo "Files to deploy:"
           ls -la
 
 
