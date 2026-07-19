@@ -7,14 +7,17 @@ on:
 
   workflow_dispatch:
 
+
 permissions:
   contents: read
 
 
 jobs:
+
   deploy:
 
     runs-on: ubuntu-latest
+
 
     steps:
 
@@ -28,35 +31,32 @@ jobs:
           node-version: "24"
 
 
-      - name: Show Environment
+      # 安装依赖前清理，避免 node_modules 被上传
+      - name: Install Dependencies
         run: |
-          node --version
-          npm --version
-          pwd
-          echo "===================="
+          npm install
+
+
+      # 删除不需要上传的文件
+      - name: Prepare Assets
+        run: |
+          rm -rf node_modules
+          rm -rf .git
+          rm -rf .github
+          rm -rf solara-assets.zip
+          rm -rf Preview.gif
+
+
+      - name: Check Files
+        run: |
+          echo "Deployment files:"
           ls -la
-          echo "===================="
-          cat wrangler.jsonc
 
 
-      - name: Deploy to Cloudflare Workers
+      - name: Deploy Cloudflare Worker
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: "4.112.0"
           command: deploy --config=wrangler.jsonc
-
-
-      - name: Debug Deployment Info
-        if: failure()
-        run: |
-          echo "Deployment failed"
-          echo "Checking Wrangler version:"
-          npx wrangler --version || true
-
-          echo "Checking project:"
-          ls -la
-
-          echo "Checking wrangler config:"
-          cat wrangler.jsonc
