@@ -1,20 +1,10 @@
 {
   "name": "solara",
-
   "compatibility_date": "2025-12-21",
-
   "main": "worker.js",
 
   "assets": {
     "binding": "ASSETS",
-    "directory": ".",
-
-    "exclude": [
-      "node_modules/**",
-      ".git/**",
-      ".github/**",
-      "*.zip",
-      "*.log"
-    ]
+    "directory": "./public"
   }
 }
