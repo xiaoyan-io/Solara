@@ -22,15 +22,17 @@ jobs:
         with:
           node-version: "24"
 
-      - name: Show Project Files
+      - name: Show Project Structure
         run: |
-          echo "Current directory:"
           pwd
-          echo ""
-          echo "Project files:"
+          echo "=============================="
+          echo "Repository files"
+          echo "=============================="
           ls -la
           echo ""
-          echo "wrangler.jsonc:"
+          echo "=============================="
+          echo "wrangler.jsonc"
+          echo "=============================="
           cat wrangler.jsonc
 
       - name: Deploy to Cloudflare
@@ -40,7 +42,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --config=wrangler.jsonc
 
-      - name: Verify Deployment
+      - name: List Deployments
         if: success()
         uses: cloudflare/wrangler-action@v3
         with:
